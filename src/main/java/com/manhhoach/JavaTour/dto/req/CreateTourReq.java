@@ -11,9 +11,5 @@ public class CreateTourReq {
     private String name;
     private String description;
     private String location;
-    private Double price;
-    private LocalDate startDate;
-    private LocalDate endDate;
-
     private GeoLocation coordinates;
 }

@@ -17,12 +17,6 @@ public class Tour extends BaseEntity {
 
     private String location;
 
-    private Double price;
-
-    private LocalDate startDate;
-
-    private LocalDate endDate;
-
     @Embedded
     private GeoLocation coordinates;
 }
