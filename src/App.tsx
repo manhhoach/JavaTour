@@ -2,7 +2,7 @@ import { Row, Col } from 'antd';
 import DestinationList from './components/DestinationList';
 import MapView from './components/MapView';
 import { useState } from 'react';
-import Coordinates from './types/Coordinates';
+import Coordinates from './types/tour/Coordinates';
 
 function App() {
   const [selectedCoords, setSelectedCoords] = useState<Coordinates | null>(null);

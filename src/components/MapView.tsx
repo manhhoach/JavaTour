@@ -3,7 +3,7 @@ import 'leaflet/dist/leaflet.css';
 import { FC, useEffect } from 'react';
 import { LatLngExpression } from 'leaflet';
 import MapClickHandler from './MapClickHandler';
-import Coordinates from '../types/Coordinates';
+import Coordinates from '../types/tour/Coordinates';
 
 // Tọa độ mặc định (ví dụ: Hà Nội)
 const defaultCenter: LatLngExpression = [21.028511, 105.854444];
@@ -12,7 +12,7 @@ interface MapViewProps {
    selectedCoords: Coordinates | null;
 }
 
-const FlyToHandler = ({coords}:{coords: Coordinates}) => {
+const FlyToHandler = ({ coords }: { coords: Coordinates }) => {
    const map = useMap();
 
    useEffect(() => {

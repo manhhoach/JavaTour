@@ -1,4 +1,4 @@
-import TourDto from '../types/TourDto';
+import TourDto from '../types/tour/TourDto';
 
 const tours: TourDto[] = [
    {

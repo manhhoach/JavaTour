@@ -1,7 +1,7 @@
 import { FC } from "react";
 import { Card } from 'antd';
-import TourDto from "../types/TourDto";
-import Coordinates from "../types/Coordinates";
+import TourDto from "../types/tour/TourDto";
+import Coordinates from "../types/tour/Coordinates";
 
 interface DestinationItemProps {
    tour: TourDto;
