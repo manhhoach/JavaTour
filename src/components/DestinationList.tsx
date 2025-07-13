@@ -15,17 +15,21 @@ type DestinationListProps = {
 }
 
 const DestinationList: FC<DestinationListProps> = ({ onSelect }) => {
+   const [page, setPage] = useState(1);
+   const [selectedTour, setSelectedTour] = useState<TourDto | null>(null);
    const { data, loading, error } = useApi<ApiResponse<PagedResponse<TourDto>>>({
       url: "tours/paged",
       params: {
+         page: page,
+         size: 2
       }
    });
-   const [selectedTour, setSelectedTour] = useState<TourDto | null>(null);
 
-   const tours = data?.data.items;
-   if (loading) {
+   if (loading || !data) {
       return <Loading />
    }
+   const { items: tours, totalPages } = data.data;
+
    if (!tours || tours.length === 0) {
       return <NotFound />
    }
@@ -34,10 +38,27 @@ const DestinationList: FC<DestinationListProps> = ({ onSelect }) => {
    }
    return (
       <>
-         <div style={{ padding: '1rem', overflowY: 'auto', height: '100vh' }}>
+         <div style={{ padding: '1rem', overflowY: 'auto', height: '80vh' }}>
             {tours.map((tour) => (
                <DestinationItem key={tour.id} isCurrent={tour.id === selectedTour?.id} setSelectedTour={setSelectedTour} tour={tour} onSelect={onSelect} />
             ))}
+         </div>
+         <div className="flex gap-4">
+            <button
+               disabled={page === 1}
+               onClick={() => setPage((p) => p - 1)}
+               className="px-3 py-1 bg-gray-200 rounded disabled:opacity-50"
+            >
+               Previous
+            </button>
+            <span className="text-sm self-center">Page {page} of {totalPages}</span>
+            <button
+               disabled={page === totalPages}
+               onClick={() => setPage((p) => p + 1)}
+               className="px-3 py-1 bg-gray-200 rounded disabled:opacity-50"
+            >
+               Next
+            </button>
          </div>
       </>
 

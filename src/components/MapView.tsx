@@ -16,7 +16,7 @@ const FlyToHandler = ({ coords }: { coords: Coordinates }) => {
    const map = useMap();
 
    useEffect(() => {
-      map.flyTo([coords.lat, coords.lng], 13, {
+      map.flyTo([coords.latitude, coords.longitude], 13, {
          duration: 1,
       });
    }, [coords]);
@@ -51,7 +51,7 @@ const MapView: FC<MapViewProps> = ({ selectedCoords }) => {
          {selectedCoords && (
             <>
                <FlyToHandler coords={selectedCoords} />
-               <Marker position={[selectedCoords.lat, selectedCoords.lng]} />
+               <Marker position={[selectedCoords.latitude, selectedCoords.longitude]} />
             </>
          )}
       </MapContainer>

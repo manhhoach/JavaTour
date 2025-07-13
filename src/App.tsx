@@ -9,10 +9,10 @@ function App() {
 
   return (
     <Row style={{ height: '100vh' }}>
-      <Col span={5}>
+      <Col span={6}>
         <DestinationList onSelect={(coords) => setSelectedCoords(coords)} />
       </Col>
-      <Col span={19}>
+      <Col span={18}>
         <MapView selectedCoords={selectedCoords} />
       </Col>
     </Row>
