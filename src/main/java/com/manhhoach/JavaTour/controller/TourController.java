@@ -19,11 +19,6 @@ public class TourController {
 
     private final TourService tourService;
 
-    @GetMapping
-    public ApiResponse<List<TourDto>> getAllTours() {
-        return ApiResponse.success(tourService.getAllTours());
-    }
-
     @GetMapping("/paged")
     public ApiResponse<PagedResponse<TourDto>> getPagedTours(PagingRequest request) {
         return ApiResponse.success(

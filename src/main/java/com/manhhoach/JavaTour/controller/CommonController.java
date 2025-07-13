@@ -7,32 +7,32 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.nio.file.*;
+import java.util.Arrays;
+import java.util.List;
 import java.util.UUID;
 
 @RestController
 @RequestMapping("/common")
 public class CommonController {
-    private final Path uploadDir = Paths.get("uploads");
+    private final Path uploadDir = Paths.get(System.getProperty("user.dir"), "uploads");
+
 
     @PostMapping("/upload")
-    public ApiResponse<String> uploadFile(@RequestParam("file") MultipartFile file) {
-        try {
-            // Tạo thư mục nếu chưa tồn tại
-            if (!Files.exists(uploadDir)) {
-                Files.createDirectories(uploadDir);
-            }
-
-            // Tạo file path (tránh ghi đè)
-            String fileName = UUID.randomUUID() + "_" + file.getOriginalFilename();
-            Path filePath = uploadDir.resolve(fileName);
-
-            // Lưu file
-            file.transferTo(filePath.toFile());
-
-            // Trả lại URL hoặc tên file
-            return ApiResponse.success("/uploads/" + fileName); // bạn tự cấu hình route tĩnh
-        } catch (IOException e) {
-            return ApiResponse.error("File upload failed: " + e.getMessage());
+    public ApiResponse<List<String>> uploadFile(@RequestParam("files") MultipartFile[] files) throws IOException {
+        if (!Files.exists(uploadDir)) {
+            Files.createDirectories(uploadDir);
         }
+        var res = Arrays.stream(files).map(file -> {
+            try {
+                String fileName = file.getOriginalFilename();
+                Path filePath = uploadDir.resolve(fileName);
+
+                file.transferTo(filePath.toFile()); // Lưu file
+                return "uploads/"+fileName; // Trả lại tên file đã lưu
+            } catch (IOException e) {
+                throw new RuntimeException(e.getMessage());
+            }
+        }).toList();
+        return ApiResponse.success(res);
     }
 }

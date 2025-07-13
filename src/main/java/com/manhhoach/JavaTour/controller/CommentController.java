@@ -16,11 +16,11 @@ import java.util.List;
 @RestController
 @RequestMapping("/comments")
 public class CommentController {
-    @Autowired
-    private CommentService commentService;
-
-    @GetMapping("/{tourId}")
-    public ApiResponse<List<CommentDto>> getData(@PathVariable Long tourId) {
-        return ApiResponse.success(commentService.getCommentByTour(tourId));
-    }
+//    @Autowired
+//    private CommentService commentService;
+//
+//    @GetMapping("/{tourId}")
+//    public ApiResponse<List<CommentDto>> getData(@PathVariable Long tourId) {
+//        return ApiResponse.success(commentService.getCommentByTour(tourId));
+//    }
 }
