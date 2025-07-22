@@ -36,14 +36,41 @@ const DestinationList: FC<DestinationListProps> = ({ onSelect }) => {
    if (error) {
       return <ErrorMessage error={error} />
    }
+
+
+
+   const handleDelete = (tour: TourDto) => {
+      console.log("Deleting tour:", tour);
+      // TODO: Gọi API xoá nếu có
+   };
+
+   const handleEdit = (tour: TourDto) => {
+      console.log("Editing tour:", tour);
+      // TODO: Chuyển hướng đến trang chỉnh sửa hoặc mở modal
+   };
+
+   const handleDetail = (tour: TourDto) => {
+      console.log("Viewing detail of tour:", tour);
+      // TODO: Hiển thị chi tiết, ví dụ mở modal hoặc điều hướng
+   };
+
    return (
       <>
          <div style={{ padding: '1rem', overflowY: 'auto', height: '80vh' }}>
             {tours.map((tour) => (
-               <DestinationItem key={tour.id} isCurrent={tour.id === selectedTour?.id} setSelectedTour={setSelectedTour} tour={tour} onSelect={onSelect} />
+               <DestinationItem
+                  key={tour.id}
+                  isCurrent={tour.id === selectedTour?.id}
+                  setSelectedTour={setSelectedTour}
+                  tour={tour}
+                  onSelect={onSelect}
+                  onDelete={handleDelete}
+                  onDetail={handleDetail}
+                  onEdit={handleEdit}
+               />
             ))}
          </div>
-         <div className="flex gap-4">
+         <div className="flex justify-center gap-4">
             <button
                disabled={page === 1}
                onClick={() => setPage((p) => p - 1)}
