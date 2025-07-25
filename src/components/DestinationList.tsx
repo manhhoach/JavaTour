@@ -5,9 +5,10 @@ import TourDto from '../types/tour/TourDto';
 import useApi from '../common/useApi';
 import Loading from './Loading';
 import NotFound from './NotFound';
-import { ApiResponse } from '../types/common/apiResponse';
+import { ApiResponse } from './../types/common/ApiResponse';
 import { PagedResponse } from '../types/common/PagedResponse';
 import ErrorMessage from './ErrorMessage';
+import TourFormModal from './TourFormModal';
 
 
 type DestinationListProps = {
@@ -17,11 +18,12 @@ type DestinationListProps = {
 const DestinationList: FC<DestinationListProps> = ({ onSelect }) => {
    const [page, setPage] = useState(1);
    const [selectedTour, setSelectedTour] = useState<TourDto | null>(null);
+   const [showModal, setShowModal] = useState<boolean>(false);
    const { data, loading, error } = useApi<ApiResponse<PagedResponse<TourDto>>>({
       url: "tours/paged",
       params: {
          page: page,
-         size: 2
+         size: 3
       }
    });
 
@@ -37,22 +39,21 @@ const DestinationList: FC<DestinationListProps> = ({ onSelect }) => {
       return <ErrorMessage error={error} />
    }
 
-
-
    const handleDelete = (tour: TourDto) => {
       console.log("Deleting tour:", tour);
       // TODO: Gọi API xoá nếu có
    };
 
    const handleEdit = (tour: TourDto) => {
-      console.log("Editing tour:", tour);
-      // TODO: Chuyển hướng đến trang chỉnh sửa hoặc mở modal
+      setShowModal(true)
+      setSelectedTour(tour)
    };
 
    const handleDetail = (tour: TourDto) => {
       console.log("Viewing detail of tour:", tour);
       // TODO: Hiển thị chi tiết, ví dụ mở modal hoặc điều hướng
    };
+
 
    return (
       <>
@@ -87,6 +88,7 @@ const DestinationList: FC<DestinationListProps> = ({ onSelect }) => {
                Next
             </button>
          </div>
+         <TourFormModal open={showModal} onCancel={() => setShowModal(false)} initialData={selectedTour}></TourFormModal>
       </>
 
    );

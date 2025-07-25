@@ -28,29 +28,42 @@ export default function useApi<T = any>(options: UseApiOptions) {
    const [loading, setLoading] = useState(auto);
    const [error, setError] = useState<Error | null>(null);
 
-   const buildUrl = () => {
-      const query = new URLSearchParams(params).toString();
-      return `${baseUrl}${url}${query ? `?${query}` : ""}`;
-   };
-
-   const fetchData = async () => {
+   const fetchData = async (overrideOptions?: Partial<UseApiOptions>) => {
       setLoading(true);
       setError(null);
+
+      const merged = {
+         url,
+         method,
+         params,
+         body,
+         headers,
+         ...overrideOptions,
+      };
+
       try {
-         const res = await fetch(buildUrl(), {
-            method,
+         const query = new URLSearchParams(merged.params || {}).toString();
+         const fullUrl = `${merged.baseUrl || baseUrl}${merged.url}${query ? `?${query}` : ''}`;
+
+         // Nếu body là FormData, không set Content-Type (để trình duyệt tự set)
+         const isFormData = merged.body instanceof FormData;
+
+         const res = await fetch(fullUrl, {
+            method: merged.method,
             headers: {
-               "Content-Type": "application/json",
-               ...headers,
+               ...(isFormData ? {} : { 'Content-Type': 'application/json' }),
+               ...merged.headers,
             },
-            body: method !== "GET" ? JSON.stringify(body) : undefined,
+            body: merged.method !== 'GET' ? merged.body : undefined,
          });
+
          if (!res.ok) throw new Error(`HTTP error ${res.status}`);
          const json = await res.json();
          setData(json);
          return json;
       } catch (err: any) {
          setError(err);
+         throw err;
       } finally {
          setLoading(false);
       }
