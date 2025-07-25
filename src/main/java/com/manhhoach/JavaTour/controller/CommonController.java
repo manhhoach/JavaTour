@@ -24,11 +24,22 @@ public class CommonController {
         }
         var res = Arrays.stream(files).map(file -> {
             try {
-                String fileName = file.getOriginalFilename();
-                Path filePath = uploadDir.resolve(fileName);
+                String originalName = file.getOriginalFilename();
+                String timestamp = String.valueOf(System.currentTimeMillis());
+
+                // Tách phần đuôi file (.jpg, .png, v.v.)
+                String extension = "";
+                int dotIndex = originalName.lastIndexOf('.');
+                if (dotIndex >= 0) {
+                    extension = originalName.substring(dotIndex);
+                    originalName = originalName.substring(0, dotIndex);
+                }
+
+                String newFileName = originalName + "_" + timestamp + extension;
+                Path filePath = uploadDir.resolve(newFileName);
 
                 file.transferTo(filePath.toFile()); // Lưu file
-                return "uploads/"+fileName; // Trả lại tên file đã lưu
+                return "uploads/" + newFileName;    // Trả lại tên file đã lưu
             } catch (IOException e) {
                 throw new RuntimeException(e.getMessage());
             }
