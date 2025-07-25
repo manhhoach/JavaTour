@@ -41,9 +41,12 @@ public class TourServiceImpl implements TourService {
 
     @Override
     public TourDto getTourById(Long id) {
-        Tour tour = tourRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Tour not found with id: " + id));
-        return toDto(tour);
+        var tour = tourRepository.getDetail(id);
+        if(tour==null){
+            throw new RuntimeException("Not Found");
+        }
+        tour.setImageUrl(tourImageRepository.getListImageByTourId(id));
+        return tour;
     }
 
     @Override
