@@ -6,7 +6,7 @@ type TourDto = {
    description: string;
    location: string;
    coordinates: Coordinates;
-   imageUrl: string[];
+   imageUrls: string[];
 };
 
 export default TourDto;

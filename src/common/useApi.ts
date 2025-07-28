@@ -1,15 +1,13 @@
 import { useEffect, useState } from "react";
-
-type Method = "GET" | "POST" | "PUT" | "DELETE";
-
+import axios, { AxiosRequestConfig } from "axios";
 
 export interface UseApiOptions {
    url: string;
-   method?: Method;
+   method?: "GET" | "POST" | "PUT" | "DELETE";
    params?: Record<string, any>;
    body?: any;
-   headers?: HeadersInit;
-   auto?: boolean; // auto-fetch on mount
+   headers?: Record<string, string>;
+   auto?: boolean;
    baseUrl?: string;
 }
 
@@ -38,29 +36,29 @@ export default function useApi<T = any>(options: UseApiOptions) {
          params,
          body,
          headers,
+         baseUrl,
          ...overrideOptions,
       };
 
+      const fullUrl = `${merged.baseUrl}${merged.url}`;
+
+      const isFormData = merged.body instanceof FormData;
+
+      const axiosConfig: AxiosRequestConfig = {
+         url: fullUrl,
+         method: merged.method,
+         params: merged.params,
+         data: merged.body,
+         headers: {
+            ...(isFormData ? {} : { "Content-Type": "application/json" }),
+            ...merged.headers,
+         },
+      };
+
       try {
-         const query = new URLSearchParams(merged.params || {}).toString();
-         const fullUrl = `${merged.baseUrl || baseUrl}${merged.url}${query ? `?${query}` : ''}`;
-
-         // Nếu body là FormData, không set Content-Type (để trình duyệt tự set)
-         const isFormData = merged.body instanceof FormData;
-
-         const res = await fetch(fullUrl, {
-            method: merged.method,
-            headers: {
-               ...(isFormData ? {} : { 'Content-Type': 'application/json' }),
-               ...merged.headers,
-            },
-            body: merged.method !== 'GET' ? merged.body : undefined,
-         });
-
-         if (!res.ok) throw new Error(`HTTP error ${res.status}`);
-         const json = await res.json();
-         setData(json);
-         return json;
+         const res = await axios<T>(axiosConfig);
+         setData(res.data);
+         return res.data;
       } catch (err: any) {
          setError(err);
          throw err;
@@ -71,7 +69,7 @@ export default function useApi<T = any>(options: UseApiOptions) {
 
    useEffect(() => {
       if (auto) fetchData();
-   }, [url, JSON.stringify(params)]); // refetch if url or params change
+   }, [url, JSON.stringify(params)]); // re-fetch nếu url hoặc params thay đổi
 
    return { data, loading, error, refetch: fetchData };
 }

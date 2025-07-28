@@ -31,7 +31,6 @@ const DestinationList: FC<DestinationListProps> = ({ onSelect }) => {
       return <Loading />
    }
    const { items: tours, totalPages } = data.data;
-
    if (!tours || tours.length === 0) {
       return <NotFound />
    }

@@ -15,12 +15,12 @@ const TourFormModal: React.FC<Props> = ({ open, onCancel, initialData }) => {
     const [form] = Form.useForm();
 
     const { refetch: createTour } = useApi({
-        url: 'tour',
+        url: 'tours',
         method: 'POST',
         auto: false,
     });
     const { refetch: editTour } = useApi({
-        url: 'tour/' + initialData?.id,
+        url: 'tours/' + initialData?.id,
         method: 'PUT',
         auto: false,
     });
@@ -31,7 +31,7 @@ const TourFormModal: React.FC<Props> = ({ open, onCancel, initialData }) => {
                 name: initialData.name,
                 description: initialData.description,
                 location: initialData.location,
-                imageUrl: initialData.imageUrl,
+                imageUrls: initialData.imageUrls,
                 coordinates: {
                     latitude: initialData.coordinates.latitude,
                     longitude: initialData.coordinates.longitude,
@@ -47,7 +47,7 @@ const TourFormModal: React.FC<Props> = ({ open, onCancel, initialData }) => {
             name: values.name,
             description: values.description,
             location: values.location,
-            imageUrl: values.imageUrl,
+            imageUrls: values.imageUrls,
             coordinates: {
                 latitude: values.coordinates.latitude,
                 longitude: values.coordinates.longitude,
@@ -101,16 +101,16 @@ const TourFormModal: React.FC<Props> = ({ open, onCancel, initialData }) => {
                 </Form.Item>
 
                 <Form.Item
-                    name="imageUrl"
+                    name="imageUrls"
                     label="Image"
                     rules={[{ required: true, message: 'Please upload an image' }]}
                 >
                     <CustomUpload
                         maxSizeMB={5}
                         accept=".jpg,.jpeg,.png"
-                        initialData={initialData?.imageUrl || []}
+                        initialData={initialData?.imageUrls || []}
                         onUploadSuccess={(urls) => {
-                            form.setFieldsValue({ imageUrl: urls });
+                            form.setFieldsValue({ imageUrls: urls });
                         }}
                     />
                 </Form.Item>
