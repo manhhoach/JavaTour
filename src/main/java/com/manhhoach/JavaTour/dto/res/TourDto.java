@@ -18,5 +18,5 @@ public class TourDto {
     private String description;
     private String location;
     private GeoLocation coordinates;
-    private List<String> imageUrl;
+    private List<String> imageUrls;
 }

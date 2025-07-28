@@ -42,10 +42,10 @@ public class TourServiceImpl implements TourService {
     @Override
     public TourDto getTourById(Long id) {
         var tour = tourRepository.getDetail(id);
-        if(tour==null){
+        if (tour == null) {
             throw new RuntimeException("Not Found");
         }
-        tour.setImageUrl(tourImageRepository.getListImageByTourId(id));
+        tour.setImageUrls(tourImageRepository.getListImageByTourId(id));
         return tour;
     }
 
@@ -141,9 +141,21 @@ public class TourServiceImpl implements TourService {
     public PagedResponse<TourDto> getToursPaged(int page, int size) {
         Pageable pageable = PageRequest.of(page - 1, size, Sort.by("createdAt").descending());
         Page<Tour> tourPage = tourRepository.findAll(pageable);
+        var tourIds = tourPage.getContent().stream().map(e -> e.getId()).toList();
+        var imgList = tourImageRepository.findByListTourIds(tourIds);
+        var tourDtos = tourPage.getContent().stream().map(tour -> {
+            var dto = toDto(tour);
+            dto.setImageUrls(
+                    imgList.stream()
+                            .filter(tourImage -> dto.getId().equals(tourImage.getTourId()))
+                            .map(e -> e.getImageUrl())
+                            .toList()
+            );
+            return dto;
+        }).toList();
 
         return new PagedResponse<>(
-                tourPage.getContent().stream().map(this::toDto).toList(),
+                tourDtos,
                 tourPage.getNumber() + 1,
                 tourPage.getTotalPages(),
                 tourPage.getTotalElements()
