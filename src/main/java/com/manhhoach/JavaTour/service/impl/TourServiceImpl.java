@@ -139,7 +139,7 @@ public class TourServiceImpl implements TourService {
 
     @Override
     public PagedResponse<TourDto> getToursPaged(int page, int size) {
-        Pageable pageable = PageRequest.of(page - 1, size, Sort.by("createdAt").descending());
+        Pageable pageable = PageRequest.of(page-1, size, Sort.by("id").descending());
         Page<Tour> tourPage = tourRepository.findAll(pageable);
         var tourIds = tourPage.getContent().stream().map(e -> e.getId()).toList();
         var imgList = tourImageRepository.findByListTourIds(tourIds);
