@@ -19,7 +19,7 @@ const DestinationList: FC<DestinationListProps> = ({ onSelect }) => {
    const [page, setPage] = useState(1);
    const [selectedTour, setSelectedTour] = useState<TourDto | null>(null);
    const [showModal, setShowModal] = useState<boolean>(false);
-   const { data, loading, error } = useApi<ApiResponse<PagedResponse<TourDto>>>({
+   const { data, loading, error, refetch } = useApi<ApiResponse<PagedResponse<TourDto>>>({
       url: "tours/paged",
       params: {
          page: page,
@@ -37,11 +37,6 @@ const DestinationList: FC<DestinationListProps> = ({ onSelect }) => {
    if (error) {
       return <ErrorMessage error={error} />
    }
-
-   const handleDelete = (tour: TourDto) => {
-      console.log("Deleting tour:", tour);
-      // TODO: Gọi API xoá nếu có
-   };
 
    const handleEdit = (tour: TourDto) => {
       setShowModal(true)
@@ -64,9 +59,9 @@ const DestinationList: FC<DestinationListProps> = ({ onSelect }) => {
                   setSelectedTour={setSelectedTour}
                   tour={tour}
                   onSelect={onSelect}
-                  onDelete={handleDelete}
                   onDetail={handleDetail}
                   onEdit={handleEdit}
+                  refetch={refetch}
                />
             ))}
          </div>
@@ -87,7 +82,7 @@ const DestinationList: FC<DestinationListProps> = ({ onSelect }) => {
                Next
             </button>
          </div>
-         <TourFormModal open={showModal} onCancel={() => setShowModal(false)} initialData={selectedTour}></TourFormModal>
+         <TourFormModal open={showModal} refetch={refetch} onCancel={() => setShowModal(false)} initialData={selectedTour}></TourFormModal>
       </>
 
    );

@@ -1,21 +1,24 @@
 import { FC, useState } from "react";
-import { Button, Card, Space } from 'antd';
+import { Button, Card, message, Popconfirm, Space } from 'antd';
 import TourDto from "../types/tour/TourDto";
 import Coordinates from "../types/tour/Coordinates";
 import { AiFillDelete, AiFillEdit, AiFillInfoCircle } from "react-icons/ai";
+import useApi from "../common/useApi";
+import { ApiResponse } from "../types/common/ApiResponse";
+import { PagedResponse } from "../types/common/PagedResponse";
 
 interface DestinationItemProps {
    tour: TourDto;
    onSelect: (coords: Coordinates) => void;
    setSelectedTour: (tour: TourDto | null) => void;
    isCurrent: boolean;
-   onDelete: Function;
    onEdit: Function;
    onDetail: Function;
+   refetch: () => Promise<ApiResponse<PagedResponse<TourDto>>>;
 }
 
 
-const DestinationItem: FC<DestinationItemProps> = ({ tour, onSelect, setSelectedTour, isCurrent, onDelete, onEdit, onDetail }) => {
+const DestinationItem: FC<DestinationItemProps> = ({ tour, onSelect, setSelectedTour, isCurrent, onEdit, onDetail, refetch }) => {
    const [currentImgIndex, setCurrentImgIndex] = useState(0);
 
    const handleClick = () => {
@@ -31,6 +34,22 @@ const DestinationItem: FC<DestinationItemProps> = ({ tour, onSelect, setSelected
       e.stopPropagation();
       setCurrentImgIndex((idx) => (idx === imgUrls.length - 1 ? 0 : idx + 1));
    };
+   const { refetch: deleteTour } = useApi({
+      url: 'tours/' + tour?.id,
+      method: 'DELETE',
+      auto: false,
+   });
+
+   const handleDelete = async () => {
+      try {
+         await deleteTour();
+         message.success("Xoá tour thành công!");
+         await refetch();
+      } catch (err) {
+         message.error("Không thể xoá tour");
+      }
+   };
+
    const imgUrls = (tour.imageUrls && tour.imageUrls.length > 0)
       ? tour.imageUrls.map(e => `${import.meta.env.VITE_API_BASE_URL}${e}`)
       : ['images/default.jpg'];
@@ -88,7 +107,17 @@ const DestinationItem: FC<DestinationItemProps> = ({ tour, onSelect, setSelected
                <Space style={{ marginTop: "0.5rem" }}>
                   <Button icon={<AiFillInfoCircle />} onClick={() => onDetail?.(tour)} />
                   <Button type="primary" icon={<AiFillEdit />} onClick={() => onEdit?.(tour)} />
-                  <Button danger icon={<AiFillDelete />} onClick={() => onDelete?.(tour)} />
+                  <Popconfirm
+                     title={`Bạn có chắc muốn xoá tour "${tour.name}"?`}
+                     onConfirm={handleDelete}
+                     okText="Xoá"
+                     cancelText="Huỷ"
+                     okType="danger"
+                  >
+                     <Button danger icon={<AiFillDelete />}>
+
+                     </Button>
+                  </Popconfirm>
                </Space>
             </div>
          )}

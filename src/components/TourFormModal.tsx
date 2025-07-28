@@ -3,15 +3,18 @@ import { Modal, Form, Input, InputNumber, message } from 'antd';
 import TourDto from '../types/tour/TourDto';
 import CustomUpload from './CustomUpload';
 import useApi from '../common/useApi';
+import { ApiResponse } from '../types/common/ApiResponse';
+import { PagedResponse } from '../types/common/PagedResponse';
 
 
 type Props = {
     open: boolean;
     onCancel: () => void;
     initialData: TourDto | null;
+    refetch: () => Promise<ApiResponse<PagedResponse<TourDto>>>;
 };
 
-const TourFormModal: React.FC<Props> = ({ open, onCancel, initialData }) => {
+const TourFormModal: React.FC<Props> = ({ open, onCancel, initialData, refetch }) => {
     const [form] = Form.useForm();
 
     const { refetch: createTour } = useApi({
@@ -55,10 +58,11 @@ const TourFormModal: React.FC<Props> = ({ open, onCancel, initialData }) => {
         };
 
         try {
-            initialData != null ? editTour({ body: formData }) : createTour({ body: formData });
+            initialData != null ? await editTour({ body: formData }) : await createTour({ body: formData });
             message.success("Tour created successfully!");
             form.resetFields();
-            onCancel(); // đóng modal
+            onCancel();
+            await refetch();
         } catch (err: any) {
             message.error("Failed to create tour: " + (err.message || 'Unknown error'));
         }
