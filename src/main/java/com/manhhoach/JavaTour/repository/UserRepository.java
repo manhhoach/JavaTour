@@ -14,4 +14,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
             Select u from User u join fetch u.roles r join fetch r.permissions where u.id = :id
             """)
     Optional<User> getDetail(Long id);
+
+    Optional<User> findByUsername(String username);
+
+    boolean existsByUsername(String username);
 }
