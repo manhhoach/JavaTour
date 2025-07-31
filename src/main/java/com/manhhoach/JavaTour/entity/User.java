@@ -1,8 +1,10 @@
 package com.manhhoach.JavaTour.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
+import jakarta.persistence.*;
 import lombok.Data;
+
+import java.util.List;
+import java.util.Set;
 
 @Entity
 @Data
@@ -14,5 +16,11 @@ public class User extends BaseEntity {
     @Column(nullable = false)
     private String password;
 
-    private String role; // ADMIN, USER, etc.
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "user_role",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id")
+    )
+    private Set<Role> roles;
 }
