@@ -17,6 +17,7 @@ public class Tour extends BaseEntity {
 
     private String location;
 
-    @Embedded
-    private GeoLocation coordinates;
+    private Double latitude;
+
+    private Double longitude;
 }

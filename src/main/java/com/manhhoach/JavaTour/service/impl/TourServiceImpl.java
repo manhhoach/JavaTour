@@ -16,10 +16,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -41,11 +38,28 @@ public class TourServiceImpl implements TourService {
 
     @Override
     public TourDto getTourById(Long id) {
-        var tour = tourRepository.getDetail(id);
-        if (tour == null) {
-            throw new RuntimeException("Not Found");
+
+        List<Object[]> rows = tourRepository.findTourWithImages(id);
+
+        if (rows.isEmpty()) {
+            throw new RuntimeException("Tour not found");
         }
-        tour.setImageUrls(tourImageRepository.getListImageByTourId(id));
+        var tour = new TourDto();
+        Object[] firstRow = rows.get(0);
+        tour.setId(((Number)firstRow[0]).longValue());
+        tour.setName((String) firstRow[1]);
+        tour.setDescription((String) firstRow[2]);
+        tour.setLocation((String) firstRow[3]);
+        tour.setLatitude(firstRow[4] != null ? ((Number) firstRow[4]).doubleValue() : null);
+        tour.setLongitude(firstRow[5] != null ? ((Number) firstRow[5]).doubleValue() : null);
+
+
+        List<String> imageUrls = rows.stream()
+                .map(r -> (String) r[6])
+                .filter(Objects::nonNull)
+                .distinct()
+                .toList();
+        tour.setImageUrls(imageUrls);
         return tour;
     }
 
@@ -56,8 +70,8 @@ public class TourServiceImpl implements TourService {
         tour.setName(request.getName());
         tour.setDescription(request.getDescription());
         tour.setLocation(request.getLocation());
-        tour.setCoordinates(request.getCoordinates());
-
+        tour.setLatitude(request.getLatitude());
+        tour.setLongitude(request.getLongitude());
         // 2. Lưu Tour trước để có id
         Tour savedTour = tourRepository.save(tour);
 
@@ -89,7 +103,8 @@ public class TourServiceImpl implements TourService {
         tour.setName(request.getName());
         tour.setDescription(request.getDescription());
         tour.setLocation(request.getLocation());
-        tour.setCoordinates(request.getCoordinates());
+        tour.setLatitude(request.getLatitude());
+        tour.setLongitude(request.getLongitude());
 
         Tour updatedTour = tourRepository.save(tour);
 
@@ -168,7 +183,8 @@ public class TourServiceImpl implements TourService {
         dto.setName(tour.getName());
         dto.setDescription(tour.getDescription());
         dto.setLocation(tour.getLocation());
-        dto.setCoordinates(tour.getCoordinates());
+        tour.setLatitude(tour.getLatitude());
+        tour.setLongitude(tour.getLongitude());
         return dto;
     }
 }

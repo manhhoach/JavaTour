@@ -1,9 +1,7 @@
 package com.manhhoach.JavaTour.dto.req;
 
-import com.manhhoach.JavaTour.entity.GeoLocation;
 import lombok.Data;
 
-import java.time.LocalDate;
 import java.util.List;
 
 
@@ -12,6 +10,7 @@ public class CreateTourReq {
     private String name;
     private String description;
     private String location;
-    private GeoLocation coordinates;
+    private Double latitude;
+    private Double longitude;
     private List<String> imageUrls;
 }

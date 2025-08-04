@@ -7,16 +7,23 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public interface TourRepository extends JpaRepository<Tour, Long> {
 
     @Query(value = """
-    SELECT new com.manhhoach.JavaTour.dto.res.TourDto(
-            t.id, t.name, t.description, t.location, 
-           new com.manhhoach.JavaTour.entity.GeoLocation(t.coordinates.latitude, t.coordinates.longitude),
-          null)
-    FROM Tour t 
-    WHERE t.id = :id
-    """)
-    TourDto getDetail(@Param("id") Long id);
+        SELECT 
+            t.id AS tour_id,
+            t.name,
+            t.description,
+            t.location,
+            t.latitude,
+            t.longitude,
+            i.image_url
+        FROM tour t
+        LEFT JOIN tour_image i ON t.id = i.tour_id
+        WHERE t.id = :id
+    """, nativeQuery = true)
+    List<Object[]> findTourWithImages(@Param("id") Long id);
 }
