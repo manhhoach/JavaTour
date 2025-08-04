@@ -1,5 +1,6 @@
 package com.manhhoach.JavaTour.service.impl;
 
+import com.manhhoach.JavaTour.constants.RoleConstant;
 import com.manhhoach.JavaTour.dto.req.LoginReq;
 import com.manhhoach.JavaTour.dto.req.RegisterReq;
 import com.manhhoach.JavaTour.dto.res.LoginRes;
@@ -46,15 +47,14 @@ public class AuthServiceImpl implements AuthService {
             throw new RuntimeException("Username đã tồn tại");
         }
         String hashedPassword = passwordHasher.hash(req.getPassword());
-        Role defaultRole = roleRepository.findByName("user")
-                .orElseThrow(() -> new RuntimeException("Role mặc định không tồn tại"));
+        Role defaultRole = roleRepository.findByName(RoleConstant.USER)
+                .orElseThrow(() -> new RuntimeException("Default role is not exists"));
 
         User user = new User();
         user.setUsername(req.getUsername());
         user.setPassword(hashedPassword);
-        user.setRoles(Set.of(defaultRole)); // dùng Set hoặc List tùy entity bạn
+        user.setRoles(Set.of(defaultRole));
 
-        // 5. Lưu user vào DB
         userRepository.save(user);
         return true;
     }

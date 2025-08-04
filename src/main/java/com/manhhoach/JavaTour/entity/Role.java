@@ -1,6 +1,7 @@
 package com.manhhoach.JavaTour.entity;
 
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Data;
 
 import java.util.List;
@@ -8,6 +9,7 @@ import java.util.Set;
 
 @Entity
 @Data
+@Builder
 public class Role extends BaseEntity{
     private String name;
     private String code;
