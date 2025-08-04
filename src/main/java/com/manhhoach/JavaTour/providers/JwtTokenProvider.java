@@ -17,10 +17,10 @@ import java.util.List;
 
 @Component
 public class JwtTokenProvider {
-    @Value("${JWT_SECRET}")
-    private String secret;
+    //@Value("${JWT_SECRET}")
+    private String secret = "mySuperSecretKeyWithAtLeast32Chars";
 
-    @Value("${JWT_EXPIRATION}") // default 1h
+  //  @Value("${JWT_EXPIRATION}") // default 1h
     private long expirationMs;
 
     private SecretKey secretKey;
