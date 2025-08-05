@@ -4,6 +4,7 @@ import com.manhhoach.JavaTour.constants.RoleConstant;
 import com.manhhoach.JavaTour.dto.req.LoginReq;
 import com.manhhoach.JavaTour.dto.req.RegisterReq;
 import com.manhhoach.JavaTour.dto.res.LoginRes;
+import com.manhhoach.JavaTour.dto.res.UserDto;
 import com.manhhoach.JavaTour.entity.Role;
 import com.manhhoach.JavaTour.entity.User;
 import com.manhhoach.JavaTour.providers.JwtTokenProvider;
@@ -17,6 +18,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Set;
 
 @Service
@@ -25,9 +27,7 @@ public class AuthServiceImpl implements AuthService {
 
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
-
     private final PasswordHasher passwordHasher;
-
     private final JwtTokenProvider jwtTokenProvider;
 
     @Override
@@ -37,8 +37,9 @@ public class AuthServiceImpl implements AuthService {
         if (!passwordHasher.verify(req.getPassword(), user.getPassword())) {
             throw new RuntimeException("Invalid username or password");
         }
-
-        return null;
+        var listRole = user.getRoles().stream().map(e->e.getCode()).toList();
+        var token = jwtTokenProvider.generateToken(user.getUsername(), listRole);
+        return LoginRes.builder().token(token).build();
     }
 
     @Override
@@ -57,5 +58,10 @@ public class AuthServiceImpl implements AuthService {
 
         userRepository.save(user);
         return true;
+    }
+
+    @Override
+    public UserDto getMe() {
+        return null;
     }
 }

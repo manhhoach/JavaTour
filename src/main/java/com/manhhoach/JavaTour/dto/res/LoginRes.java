@@ -6,7 +6,5 @@ import lombok.Data;
 @Data
 @Builder
 public class LoginRes {
-    private String username;
-    private Long id;
     private String token;
 }
