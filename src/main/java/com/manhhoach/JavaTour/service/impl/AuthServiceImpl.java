@@ -29,6 +29,7 @@ public class AuthServiceImpl implements AuthService {
     private final RoleRepository roleRepository;
     private final PasswordHasher passwordHasher;
     private final JwtTokenProvider jwtTokenProvider;
+    private final RedisService redisService;
 
     @Override
     public LoginRes login(LoginReq req) {
