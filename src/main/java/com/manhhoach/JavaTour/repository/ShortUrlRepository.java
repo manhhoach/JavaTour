@@ -14,5 +14,11 @@ public interface ShortUrlRepository extends JpaRepository<ShortUrl, Long> {
     @Query("""
             SELECT COUNT(su) FROM ShortUrl su WHERE su.shortCode = :alias
             """)
-    Integer countUrlWithAlias(String alias);
+    Integer countUrlByAlias(String alias);
+
+
+    @Query("""
+            SELECT su.originalUrl FROM ShortUrl su WHERE su.shortCode = :alias
+            """)
+    String getOriginalUrlByAlias(String alias);
 }

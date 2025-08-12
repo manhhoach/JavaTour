@@ -20,8 +20,8 @@ public class ShortUrlController {
         return ApiResponse.success(shortUrlService.createShortUrl(req));
     }
 
-    @GetMapping("/{shortCode}")
-    public ApiResponse<String> getOriginalUrl(@RequestParam String shortCode){
+    @GetMapping("{shortCode}")
+    public ApiResponse<String> getOriginalUrl(@PathVariable String shortCode){
         return ApiResponse.success(shortUrlService.getOriginalUrl(shortCode));
     }
 }

@@ -28,8 +28,8 @@ public class ShortUrlServiceImpl implements ShortUrlService {
             return shortUrl;
         }
         ShortUrl shortUrlEntity = null;
-        if (req.getAlias() != null && req.getAlias() != "") {
-            Integer countOfUrl = shortUrlRepository.countUrlWithAlias(req.getAlias());
+        if (req.getAlias() != null && !req.getAlias().isEmpty()) {
+            Integer countOfUrl = shortUrlRepository.countUrlByAlias(req.getAlias());
             if (countOfUrl > 0) {
                 throw new RuntimeException("Alias has already existed");
             }
@@ -62,6 +62,6 @@ public class ShortUrlServiceImpl implements ShortUrlService {
 
     @Override
     public String getOriginalUrl(String shortCode) {
-        return "";
+        return shortUrlRepository.getOriginalUrlByAlias(shortCode);
     }
 }
