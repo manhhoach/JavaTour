@@ -39,9 +39,7 @@ public class ShortUrlServiceImpl implements ShortUrlService {
                     .shortCode(req.getAlias())
                     .shortUrl(combineShortUrl(req.getAlias()))
                     .build();
-        }
-        else
-        {
+        } else {
             shortUrlEntity = ShortUrl.builder().originalUrl(req.getLongUrl()).expiryAt(req.getExpirationDate()).build();
             shortUrlRepository.save(shortUrlEntity);
 

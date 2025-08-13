@@ -18,7 +18,7 @@ public class UserServiceImpl implements UserService {
     public UserDto getDetail(Long id) {
         var user = userRepository.getDetail(id).orElseThrow(() -> new RuntimeException());
         var roles = user.getRoles().stream().map(r -> {
-            var permissions = r.getPermissions().stream().map(p->
+            var permissions = r.getPermissions().stream().map(p ->
                     PermissionDto.builder().code(p.getCode()).build()
             ).toList();
 

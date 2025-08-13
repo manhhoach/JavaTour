@@ -7,10 +7,7 @@ import com.manhhoach.JavaTour.dto.req.CreateTourReq;
 import com.manhhoach.JavaTour.dto.res.TourDto;
 import com.manhhoach.JavaTour.service.TourService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/tours")

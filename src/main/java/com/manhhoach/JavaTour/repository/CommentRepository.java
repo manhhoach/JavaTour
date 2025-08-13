@@ -18,7 +18,6 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
     List<CommentDto> findByTourId(Long tourId);
 
 
-
 //    @Query("""
 //            SELECT c.id, c.content, u.username FROM comment c JOIN user ON c.userId = user.id
 //            WHERE c.parentId = :parentId

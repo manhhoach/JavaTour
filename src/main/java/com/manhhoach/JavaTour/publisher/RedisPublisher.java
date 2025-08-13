@@ -13,7 +13,7 @@ public class RedisPublisher {
     @Autowired
     private ChannelTopic topic;
 
-    public void publish(String message){
+    public void publish(String message) {
         redisTemplate.convertAndSend(topic.getTopic(), message);
     }
 }

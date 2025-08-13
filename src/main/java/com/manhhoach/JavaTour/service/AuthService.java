@@ -7,6 +7,8 @@ import com.manhhoach.JavaTour.dto.res.UserDto;
 
 public interface AuthService {
     LoginRes login(LoginReq req);
+
     boolean register(RegisterReq req);
+
     UserDto getMe();
 }
