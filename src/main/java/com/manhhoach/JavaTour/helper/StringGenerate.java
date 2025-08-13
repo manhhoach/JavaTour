@@ -1,4 +1,4 @@
-package com.manhhoach.JavaTour.helpers;
+package com.manhhoach.JavaTour.helper;
 
 import java.util.Random;
 
@@ -22,7 +22,7 @@ public class StringGenerate {
         return encoded.reverse().toString();
     }
 
-    public static String generateShortCode(long id){
+    public static String generateShortCode(long id) {
         String base62 = encodeBase62(id);
         while (base62.length() < CODE_LENGTH) {
             char randomChar = BASE62_ALPHABET.charAt(random.nextInt(BASE));

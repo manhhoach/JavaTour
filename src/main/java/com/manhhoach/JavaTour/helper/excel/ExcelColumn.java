@@ -1,4 +1,4 @@
-package com.manhhoach.JavaTour.helpers.excel;
+package com.manhhoach.JavaTour.helper.excel;
 
 
 import java.lang.annotation.ElementType;
@@ -10,5 +10,6 @@ import java.lang.annotation.Target;
 @Target(ElementType.FIELD)
 public @interface ExcelColumn {
     String name() default "";
+
     int index() default 1;
 }

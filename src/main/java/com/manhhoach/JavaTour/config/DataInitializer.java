@@ -1,6 +1,6 @@
 package com.manhhoach.JavaTour.config;
 
-import com.manhhoach.JavaTour.constants.RoleConstant;
+import com.manhhoach.JavaTour.constant.RoleConstant;
 import com.manhhoach.JavaTour.entity.Role;
 import com.manhhoach.JavaTour.repository.RoleRepository;
 import org.springframework.boot.CommandLineRunner;

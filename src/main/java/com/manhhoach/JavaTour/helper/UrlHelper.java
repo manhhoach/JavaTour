@@ -1,4 +1,4 @@
-package com.manhhoach.JavaTour.helpers;
+package com.manhhoach.JavaTour.helper;
 
 import jakarta.servlet.http.HttpServletRequest;
 

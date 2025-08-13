@@ -2,15 +2,14 @@ package com.manhhoach.JavaTour.controller;
 
 
 import com.manhhoach.JavaTour.common.ApiResponse;
-import com.manhhoach.JavaTour.constants.FileExtension;
-import com.manhhoach.JavaTour.helpers.FileHelper;
+import com.manhhoach.JavaTour.constant.FileExtension;
+import com.manhhoach.JavaTour.helper.FileHelper;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;

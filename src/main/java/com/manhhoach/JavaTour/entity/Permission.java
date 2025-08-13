@@ -6,7 +6,7 @@ import lombok.Data;
 
 @Entity
 @Data
-public class Permission extends BaseEntity{
+public class Permission extends BaseEntity {
     private String name;
     private String code;
 }

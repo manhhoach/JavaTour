@@ -22,7 +22,7 @@ public class WebConfigurer implements WebMvcConfigurer {
     }
 
     @Override
-    public void addCorsMappings(CorsRegistry registry){
+    public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
                 .allowedOrigins("http://localhost:5173") // Hoặc "*", nếu chỉ đang dev
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")

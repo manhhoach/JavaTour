@@ -1,0 +1,29 @@
+package com.manhhoach.JavaTour.filter;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.manhhoach.JavaTour.common.ApiResponse;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.web.AuthenticationEntryPoint;
+import org.springframework.stereotype.Component;
+
+import java.io.IOException;
+
+@Component
+public class AuthEntryPoint implements AuthenticationEntryPoint {
+    @Override
+    public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException, ServletException {
+        response.setContentType("application/json;charset=UTF-8");
+        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED); // 401
+
+        ApiResponse<Object> apiResponse = ApiResponse.error(authException.getMessage());
+
+        // Chuyển ApiResponse thành JSON
+        ObjectMapper mapper = new ObjectMapper();
+        String json = mapper.writeValueAsString(apiResponse);
+
+        response.getWriter().write(json);
+    }
+}

@@ -2,8 +2,8 @@ package com.manhhoach.JavaTour.service.impl;
 
 import com.manhhoach.JavaTour.dto.req.CreateShortUrlReq;
 import com.manhhoach.JavaTour.entity.ShortUrl;
-import com.manhhoach.JavaTour.helpers.StringGenerate;
-import com.manhhoach.JavaTour.helpers.UrlHelper;
+import com.manhhoach.JavaTour.helper.StringGenerate;
+import com.manhhoach.JavaTour.helper.UrlHelper;
 import com.manhhoach.JavaTour.repository.ShortUrlRepository;
 import com.manhhoach.JavaTour.service.ShortUrlService;
 import org.springframework.beans.factory.annotation.Autowired;

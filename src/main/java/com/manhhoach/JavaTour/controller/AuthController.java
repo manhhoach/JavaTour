@@ -19,18 +19,18 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/login")
-    public ApiResponse<LoginRes> login(@RequestBody LoginReq req){
+    public ApiResponse<LoginRes> login(@RequestBody LoginReq req) {
         return ApiResponse.success(authService.login(req));
     }
 
     @PostMapping("/register")
-    public ApiResponse<Boolean> register(@RequestBody RegisterReq req){
+    public ApiResponse<Boolean> register(@RequestBody RegisterReq req) {
         return ApiResponse.success(authService.register(req));
     }
 
     @IsAuthorized({})
     @GetMapping("/me")
-    public ApiResponse<UserDto> getMe(){
+    public ApiResponse<UserDto> getMe() {
         return ApiResponse.success(authService.getMe());
     }
 }
