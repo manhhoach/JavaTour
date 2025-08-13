@@ -9,6 +9,7 @@ import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
@@ -16,6 +17,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 @Component
 public class JwtTokenProvider {
@@ -71,7 +73,13 @@ public class JwtTokenProvider {
         }
     }
 
-    public List<String> getRoles(String token) {
-        return getClaims(token).get("roles", List.class);
+    public List<String> getPermissions(String token) {
+        if (validateToken(token)) {
+            var data = getClaims(token).get("permissions", List.class);
+            return data;
+        } else {
+            throw new BadCredentialsException("Invalid JWT token");
+        }
+
     }
 }

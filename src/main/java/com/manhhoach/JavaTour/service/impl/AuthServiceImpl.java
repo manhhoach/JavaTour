@@ -22,6 +22,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -38,11 +39,6 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public LoginRes login(LoginReq req) {
-
-//        var listRole = user.getRoles().stream().map(e->e.getCode()).toList();
-//        var token = jwtTokenProvider.generateToken(user.getUsername(), listRole);
-//        return LoginRes.builder().token(token).build();
-
         try {
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(req.getUsername(), req.getPassword())
@@ -53,10 +49,12 @@ public class AuthServiceImpl implements AuthService {
             Map<String, Object> claims = new HashMap<>();
             claims.put("username", userDetails.getUsername());
             claims.put("id", userDetails.getId());
-            claims.put("permissions", userDetails.getAuthorities());
+            List<String> permissions = userDetails.getAuthorities().stream().map(e->e.getAuthority()).toList();
+            claims.put("permissions", permissions);
             String token = jwtTokenProvider.generateToken(userDetails.getUsername(), claims);
 
             return LoginRes.builder().token(token).username(userDetails.getUsername()).build();
+
         } catch (AuthenticationException e) {
             throw new RuntimeException(e);
         }

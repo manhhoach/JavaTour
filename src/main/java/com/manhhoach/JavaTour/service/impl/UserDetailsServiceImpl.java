@@ -11,12 +11,12 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
 public class UserDetailsServiceImpl implements UserDetailsService {
-
 
     @Autowired
     private UserRepository userRepository;
@@ -28,7 +28,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         var user = userRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("Not found"));
         Set<String> permissions = permissionRepository.getPermissionsByUserId(user.getId());
-        Set<GrantedAuthority> grantedAuthorities = permissions.stream().map(e -> new SimpleGrantedAuthority(e)).collect(Collectors.toSet());
+        List<GrantedAuthority> grantedAuthorities = permissions.stream().map(e -> new SimpleGrantedAuthority(e)).collect(Collectors.toList());
         return new CustomUserDetails(user.getId(), username, user.getPassword(), grantedAuthorities);
     }
 }
