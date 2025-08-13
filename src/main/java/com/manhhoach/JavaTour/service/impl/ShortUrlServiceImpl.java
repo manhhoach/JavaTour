@@ -16,6 +16,9 @@ public class ShortUrlServiceImpl implements ShortUrlService {
     @Autowired
     private ShortUrlRepository shortUrlRepository;
 
+    @Autowired
+    private RedisService redisService;
+
 
     @Transactional
     @Override
@@ -39,9 +42,7 @@ public class ShortUrlServiceImpl implements ShortUrlService {
                     .shortCode(req.getAlias())
                     .shortUrl(combineShortUrl(req.getAlias()))
                     .build();
-        }
-        else
-        {
+        } else {
             shortUrlEntity = ShortUrl.builder().originalUrl(req.getLongUrl()).expiryAt(req.getExpirationDate()).build();
             shortUrlRepository.save(shortUrlEntity);
 
@@ -62,6 +63,11 @@ public class ShortUrlServiceImpl implements ShortUrlService {
 
     @Override
     public String getOriginalUrl(String shortCode) {
-        return shortUrlRepository.getOriginalUrlByAlias(shortCode);
+        var originalUrl = redisService.get(shortCode);
+        if (originalUrl == null) {
+            originalUrl = shortUrlRepository.getOriginalUrlByAlias(shortCode);
+            redisService.save(shortCode, originalUrl);
+        }
+        return originalUrl.toString();
     }
 }
