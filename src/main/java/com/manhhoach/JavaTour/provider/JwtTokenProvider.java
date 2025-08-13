@@ -1,4 +1,4 @@
-package com.manhhoach.JavaTour.providers;
+package com.manhhoach.JavaTour.provider;
 
 
 import io.jsonwebtoken.Claims;
@@ -8,12 +8,14 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 @Component
 public class JwtTokenProvider {
@@ -30,10 +32,10 @@ public class JwtTokenProvider {
         this.secretKey = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
     }
 
-    public String generateToken(String subject, List<String> roles) {
+    public String generateToken(String subject, Map<String, Object> claims) {
         return Jwts.builder()
                 .setSubject(subject)
-                .claim("roles", roles)
+                .addClaims(claims)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + expirationMs))
                 .signWith(secretKey, SignatureAlgorithm.HS256)
@@ -61,7 +63,11 @@ public class JwtTokenProvider {
     }
 
     public String getUsername(String token) {
-        return getClaims(token).getSubject();
+        if (validateToken(token)) {
+            return getClaims(token).getSubject();
+        } else {
+            throw new BadCredentialsException("Invalid JWT token");
+        }
     }
 
     public List<String> getRoles(String token) {

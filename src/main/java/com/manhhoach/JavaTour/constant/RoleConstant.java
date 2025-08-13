@@ -1,4 +1,4 @@
-package com.manhhoach.JavaTour.constants;
+package com.manhhoach.JavaTour.constant;
 
 public class RoleConstant {
     public static String USER = "USER";

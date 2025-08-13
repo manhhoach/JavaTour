@@ -1,29 +1,28 @@
 package com.manhhoach.JavaTour.service.impl;
 
-import com.manhhoach.JavaTour.constants.RoleConstant;
+import com.manhhoach.JavaTour.config.CustomUserDetails;
+import com.manhhoach.JavaTour.constant.RoleConstant;
 import com.manhhoach.JavaTour.dto.req.LoginReq;
 import com.manhhoach.JavaTour.dto.req.RegisterReq;
 import com.manhhoach.JavaTour.dto.res.LoginRes;
 import com.manhhoach.JavaTour.dto.res.UserDto;
 import com.manhhoach.JavaTour.entity.Role;
 import com.manhhoach.JavaTour.entity.User;
-import com.manhhoach.JavaTour.providers.JwtTokenProvider;
-import com.manhhoach.JavaTour.providers.PasswordHasher;
+import com.manhhoach.JavaTour.provider.JwtTokenProvider;
 import com.manhhoach.JavaTour.repository.RoleRepository;
 import com.manhhoach.JavaTour.repository.UserRepository;
 import com.manhhoach.JavaTour.service.AuthService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
 @Service
@@ -32,30 +31,36 @@ public class AuthServiceImpl implements AuthService {
 
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
-    private final PasswordHasher passwordHasher;
+    private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
     private final RedisService redisService;
     private final AuthenticationManager authenticationManager;
 
     @Override
     public LoginRes login(LoginReq req) {
-//        User user = userRepository.findByUsername(req.getUsername())
-//                .orElseThrow(() -> new RuntimeException("Invalid username or password"));
-//        if (!passwordHasher.verify(req.getPassword(), user.getPassword())) {
-//            throw new RuntimeException("Invalid username or password");
-//        }
+
 //        var listRole = user.getRoles().stream().map(e->e.getCode()).toList();
 //        var token = jwtTokenProvider.generateToken(user.getUsername(), listRole);
 //        return LoginRes.builder().token(token).build();
 
-        try{
+        try {
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(req.getUsername(), req.getPassword())
             );
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+            CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+
+            Map<String, Object> claims = new HashMap<>();
+            claims.put("username", userDetails.getUsername());
+            claims.put("id", userDetails.getId());
+            claims.put("permissions", userDetails.getAuthorities());
+            String token = jwtTokenProvider.generateToken(userDetails.getUsername(), claims);
+
+            return LoginRes.builder().token(token).username(userDetails.getUsername()).build();
         } catch (AuthenticationException e) {
             throw new RuntimeException(e);
         }
-        return LoginRes.builder().build();
+
     }
 
     @Override
@@ -63,7 +68,7 @@ public class AuthServiceImpl implements AuthService {
         if (userRepository.existsByUsername(req.getUsername())) {
             throw new RuntimeException("Username đã tồn tại");
         }
-        String hashedPassword = passwordHasher.hash(req.getPassword());
+        String hashedPassword = passwordEncoder.encode(req.getPassword());
         Role defaultRole = roleRepository.findByName(RoleConstant.USER)
                 .orElseThrow(() -> new RuntimeException("Default role is not exists"));
 
@@ -78,6 +83,7 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public UserDto getMe() {
+        var a = SecurityContextHolder.getContext().getAuthentication();
         return null;
     }
 }

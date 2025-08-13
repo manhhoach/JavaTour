@@ -1,4 +1,4 @@
-package com.manhhoach.JavaTour.constants;
+package com.manhhoach.JavaTour.constant;
 
 public class FileExtension {
     public static String PNG = "PNG";
