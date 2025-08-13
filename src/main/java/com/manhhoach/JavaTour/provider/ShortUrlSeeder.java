@@ -26,13 +26,14 @@ public class ShortUrlSeeder implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
+
         if (shortUrlRepository.count() > 0) {
-           return; // Skip if DB already has data
+            return;// Skip if DB already has data
         }
 
         List<ShortUrl> batch = new ArrayList<>();
 
-        for (int i = 10001; i < 1000000; i++) {
+        for (int i = 10001; i < 0; i++) {
             String originalUrl = "https://example.com/page/" + i;
             String shortCode = randomBase62(6);
 
