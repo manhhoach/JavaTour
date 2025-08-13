@@ -15,6 +15,11 @@ import com.manhhoach.JavaTour.service.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.authentication.AbstractAuthenticationToken;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -30,17 +35,27 @@ public class AuthServiceImpl implements AuthService {
     private final PasswordHasher passwordHasher;
     private final JwtTokenProvider jwtTokenProvider;
     private final RedisService redisService;
+    private final AuthenticationManager authenticationManager;
 
     @Override
     public LoginRes login(LoginReq req) {
-        User user = userRepository.findByUsername(req.getUsername())
-                .orElseThrow(() -> new RuntimeException("Invalid username or password"));
-        if (!passwordHasher.verify(req.getPassword(), user.getPassword())) {
-            throw new RuntimeException("Invalid username or password");
+//        User user = userRepository.findByUsername(req.getUsername())
+//                .orElseThrow(() -> new RuntimeException("Invalid username or password"));
+//        if (!passwordHasher.verify(req.getPassword(), user.getPassword())) {
+//            throw new RuntimeException("Invalid username or password");
+//        }
+//        var listRole = user.getRoles().stream().map(e->e.getCode()).toList();
+//        var token = jwtTokenProvider.generateToken(user.getUsername(), listRole);
+//        return LoginRes.builder().token(token).build();
+
+        try{
+            Authentication authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(req.getUsername(), req.getPassword())
+            );
+        } catch (AuthenticationException e) {
+            throw new RuntimeException(e);
         }
-        var listRole = user.getRoles().stream().map(e->e.getCode()).toList();
-        var token = jwtTokenProvider.generateToken(user.getUsername(), listRole);
-        return LoginRes.builder().token(token).build();
+        return LoginRes.builder().build();
     }
 
     @Override
