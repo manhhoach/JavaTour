@@ -50,6 +50,7 @@ public class AuthServiceImpl implements AuthService {
             claims.put("id", userDetails.getId());
             List<String> permissions = userDetails.getAuthorities().stream().map(e -> e.getAuthority()).toList();
             claims.put("permissions", permissions);
+
             String token = jwtTokenProvider.generateToken(userDetails.getUsername(), claims);
 
             return LoginRes.builder().token(token).username(userDetails.getUsername()).build();

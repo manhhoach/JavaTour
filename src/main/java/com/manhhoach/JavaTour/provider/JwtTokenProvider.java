@@ -21,11 +21,17 @@ import java.util.Set;
 
 @Component
 public class JwtTokenProvider {
-    @Value("${JWT_SECRET}")
-    private String secret;
+    @Value("${security.jwt.access-token.key}")
+    private String accessTokenKey;
 
-    @Value("${JWT_EXPIRATION}") // default 1h
-    private long expirationMs;
+    @Value("${security.jwt.access-token.expiration}")
+    private long accessTokenExpirationMs;
+
+    @Value("${security.jwt.refresh-token.key}")
+    private String refreshTokenKey;
+
+    @Value("${security.jwt.refresh-token.expiration}")
+    private long refreshTokenExpirationMs;
 
     private SecretKey secretKey;
 
@@ -34,7 +40,7 @@ public class JwtTokenProvider {
         this.secretKey = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
     }
 
-    public String generateToken(String subject, Map<String, Object> claims) {
+    public String generateToken(String subject, Map<String, Object> claims, ) {
         return Jwts.builder()
                 .setSubject(subject)
                 .addClaims(claims)
