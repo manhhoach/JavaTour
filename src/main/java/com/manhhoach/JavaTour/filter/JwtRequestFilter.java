@@ -7,6 +7,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
@@ -32,15 +33,18 @@ public class JwtRequestFilter extends OncePerRequestFilter {
     @Autowired
     private AuthEntryPoint authEntryPoint;
 
+    @Value("${security.jwt.access-token.key}")
+    private String accessTokenKey;
+
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         try {
             String header = request.getHeader("Authorization");
             if (header != null && header.startsWith("Bearer")) {
-                String token = header.substring(7);
-                if (jwtTokenProvider.validateToken(token) && SecurityContextHolder.getContext().getAuthentication() == null) {
-                    String username = jwtTokenProvider.getUsername(token);
-                    var permissions = jwtTokenProvider.getPermissions(token);
+                String accessToken = header.substring(7);
+                if (jwtTokenProvider.validateToken(accessToken, accessTokenKey) && SecurityContextHolder.getContext().getAuthentication() == null) {
+                    String username = jwtTokenProvider.getUsername(accessToken, accessTokenKey);
+                    var permissions = jwtTokenProvider.getPermissions(accessToken, accessTokenKey);
                     var grantedAuthorities = permissions.stream().map(e->new SimpleGrantedAuthority(e)).toList();
                     UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(username, null, grantedAuthorities);
                     SecurityContextHolder.getContext().setAuthentication(auth);

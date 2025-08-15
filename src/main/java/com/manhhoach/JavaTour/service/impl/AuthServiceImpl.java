@@ -13,6 +13,7 @@ import com.manhhoach.JavaTour.repository.RoleRepository;
 import com.manhhoach.JavaTour.repository.UserRepository;
 import com.manhhoach.JavaTour.service.AuthService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -37,6 +38,18 @@ public class AuthServiceImpl implements AuthService {
     private final RedisService redisService;
     private final AuthenticationManager authenticationManager;
 
+    @Value("${security.jwt.access-token.key}")
+    private String accessTokenKey;
+
+    @Value("${security.jwt.access-token.expiration}")
+    private long accessTokenExpirationMs;
+
+    @Value("${security.jwt.refresh-token.key}")
+    private String refreshTokenKey;
+
+    @Value("${security.jwt.refresh-token.expiration}")
+    private long refreshTokenExpirationMs;
+
     @Override
     public LoginRes login(LoginReq req) {
         try {
@@ -51,9 +64,14 @@ public class AuthServiceImpl implements AuthService {
             List<String> permissions = userDetails.getAuthorities().stream().map(e -> e.getAuthority()).toList();
             claims.put("permissions", permissions);
 
-            String token = jwtTokenProvider.generateToken(userDetails.getUsername(), claims);
+            String accessToken = jwtTokenProvider.generateToken(userDetails.getUsername(), claims, accessTokenKey, accessTokenExpirationMs);
+            String refreshToken = jwtTokenProvider.generateToken(userDetails.getUsername(), claims, refreshTokenKey, refreshTokenExpirationMs);
 
-            return LoginRes.builder().token(token).username(userDetails.getUsername()).build();
+            return LoginRes.builder()
+                    .accessToken(accessToken)
+                    .refreshToken(refreshToken)
+                    .username(userDetails.getUsername())
+                    .build();
 
         } catch (AuthenticationException e) {
             throw new RuntimeException(e);
