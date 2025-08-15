@@ -71,4 +71,12 @@ public class JwtTokenProvider {
             throw new BadCredentialsException("Invalid JWT token", e);
         }
     }
+
+    public Long getId(String token, String key) {
+        try {
+            return parseClaims(token, key).get("id", Long.class);
+        } catch (JwtException e) {
+            throw new BadCredentialsException("Invalid JWT token", e);
+        }
+    }
 }

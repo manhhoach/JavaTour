@@ -4,11 +4,13 @@ package com.manhhoach.JavaTour.controller;
 import com.manhhoach.JavaTour.common.ApiResponse;
 import com.manhhoach.JavaTour.config.annotations.IsAuthorized;
 import com.manhhoach.JavaTour.dto.req.LoginReq;
+import com.manhhoach.JavaTour.dto.req.RefreshTokenReq;
 import com.manhhoach.JavaTour.dto.req.RegisterReq;
 import com.manhhoach.JavaTour.dto.res.LoginRes;
 import com.manhhoach.JavaTour.dto.res.UserDto;
 import com.manhhoach.JavaTour.service.AuthService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -32,5 +34,10 @@ public class AuthController {
     @GetMapping("/me")
     public ApiResponse<UserDto> getMe() {
         return ApiResponse.success(authService.getMe());
+    }
+
+    @PostMapping("/refresh-token")
+    public ApiResponse<LoginRes> refreshToken(@RequestBody RefreshTokenReq refreshTokenReq) {
+        return ApiResponse.success(authService.refreshToken(refreshTokenReq));
     }
 }

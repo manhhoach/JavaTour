@@ -3,12 +3,14 @@ package com.manhhoach.JavaTour.service.impl;
 import com.manhhoach.JavaTour.config.CustomUserDetails;
 import com.manhhoach.JavaTour.constant.RoleConstant;
 import com.manhhoach.JavaTour.dto.req.LoginReq;
+import com.manhhoach.JavaTour.dto.req.RefreshTokenReq;
 import com.manhhoach.JavaTour.dto.req.RegisterReq;
 import com.manhhoach.JavaTour.dto.res.LoginRes;
 import com.manhhoach.JavaTour.dto.res.UserDto;
 import com.manhhoach.JavaTour.entity.Role;
 import com.manhhoach.JavaTour.entity.User;
 import com.manhhoach.JavaTour.provider.JwtTokenProvider;
+import com.manhhoach.JavaTour.repository.PermissionRepository;
 import com.manhhoach.JavaTour.repository.RoleRepository;
 import com.manhhoach.JavaTour.repository.UserRepository;
 import com.manhhoach.JavaTour.service.AuthService;
@@ -37,6 +39,7 @@ public class AuthServiceImpl implements AuthService {
     private final JwtTokenProvider jwtTokenProvider;
     private final RedisService redisService;
     private final AuthenticationManager authenticationManager;
+    private final PermissionRepository permissionRepository;
 
     @Value("${security.jwt.access-token.key}")
     private String accessTokenKey;
@@ -57,22 +60,8 @@ public class AuthServiceImpl implements AuthService {
                     new UsernamePasswordAuthenticationToken(req.getUsername(), req.getPassword())
             );
             CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
-
-            Map<String, Object> claims = new HashMap<>();
-            claims.put("username", userDetails.getUsername());
-            claims.put("id", userDetails.getId());
             List<String> permissions = userDetails.getAuthorities().stream().map(e -> e.getAuthority()).toList();
-            claims.put("permissions", permissions);
-
-            String accessToken = jwtTokenProvider.generateToken(userDetails.getUsername(), claims, accessTokenKey, accessTokenExpirationMs);
-            String refreshToken = jwtTokenProvider.generateToken(userDetails.getUsername(), claims, refreshTokenKey, refreshTokenExpirationMs);
-
-            return LoginRes.builder()
-                    .accessToken(accessToken)
-                    .refreshToken(refreshToken)
-                    .username(userDetails.getUsername())
-                    .build();
-
+            return buildLoginRes(userDetails.getId(),userDetails.getUsername(),permissions);
         } catch (AuthenticationException e) {
             throw new RuntimeException(e);
         }
@@ -103,5 +92,28 @@ public class AuthServiceImpl implements AuthService {
         String username = authentication.getPrincipal().toString();
         var permissions = authentication.getAuthorities().stream().map(e -> e.getAuthority()).toList();
         return UserDto.builder().username(username).permissions(permissions).build();
+    }
+
+    @Override
+    public LoginRes refreshToken(RefreshTokenReq req) {
+        String username = jwtTokenProvider.getUsername(req.getRefreshToken(), refreshTokenKey);
+        var id = jwtTokenProvider.getId(req.getRefreshToken(), refreshTokenKey);
+        var permissions = permissionRepository.getPermissionsByUserId(id);
+        return buildLoginRes(id, username, permissions.stream().toList());
+    }
+
+    private LoginRes buildLoginRes(Long id, String username, List<String> permissions ){
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("id", id);
+        claims.put("permissions", permissions);
+
+        String accessToken = jwtTokenProvider.generateToken(username, claims, accessTokenKey, accessTokenExpirationMs);
+        String refreshToken = jwtTokenProvider.generateToken(username, claims, refreshTokenKey, refreshTokenExpirationMs);
+
+        return LoginRes.builder()
+                .accessToken(accessToken)
+                .refreshToken(refreshToken)
+                .username(username)
+                .build();
     }
 }
