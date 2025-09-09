@@ -1,7 +1,7 @@
 package com.manhhoach.JavaTour.repository;
 
 import com.manhhoach.JavaTour.dto.res.CommentDto;
-import com.manhhoach.JavaTour.entity.Comment;
+import com.manhhoach.JavaTour.entity.Property;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface CommentRepository extends JpaRepository<Comment, Long> {
+public interface CommentRepository extends JpaRepository<Property, Long> {
 
     @Query(value = """
             SELECT c.id, c.content, u.username FROM comment c JOIN user ON c.userId = user.id

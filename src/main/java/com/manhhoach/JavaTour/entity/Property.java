@@ -6,7 +6,7 @@ import lombok.Data;
 
 @Entity
 @Data
-public class Comment extends BaseEntity {
+public class Property extends BaseEntity {
 
     @Column(nullable = false)
     Long userId; // Người đăng comment
